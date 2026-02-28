@@ -30,4 +30,4 @@ jobs:
           context: .
           file: docker/Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository }}:latest
+          tags: ghcr.io/akashrai242001/hpc-tensor-runtime:latest
