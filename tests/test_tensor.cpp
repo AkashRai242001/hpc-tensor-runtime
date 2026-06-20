@@ -31,14 +31,13 @@ TEST(TensorPrint, PrintingData) {
     }    
 }
 
-TEST(NDTensor, NDTesnorPrint) {
+TEST(NDTensor, ThreeDimensionalAccess) {
     Tensor t({2, 3, 4});
-    int k = 0;
+    int counter = 0;
     for (size_t i = 0; i < t.shape()[0]; i++) {
         for (size_t j = 0; j < t.shape()[1]; j++) {
             for (size_t k = 0; k < t.shape()[2]; k++) {
-                t({i, j, k}) = i*j + (k);
-                k++;
+                t({i, j, k}) = static_cast<float>(counter++);
             }
         }
     }

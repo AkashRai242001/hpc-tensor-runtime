@@ -12,6 +12,10 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # High-performance build flags
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -march=native")
 
+# All executables (this project's own + every test binary below)
+# land in <build_dir>/bin so you can run them directly after building.
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
 # Create tensor library
 add_library(tensor
     src/core/tensor.cpp
@@ -47,16 +51,20 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-add_executable(test_tensor
-    tests/test_tensor.cpp
-)
-
-target_link_libraries(test_tensor
-    PRIVATE tensor GTest::gtest_main
-)
-
 include(GoogleTest)
-gtest_discover_tests(test_tensor)
+
+# Every tests/test_*.cpp file becomes its own executable, named after
+# the file (test_tensor.cpp -> bin/test_tensor). CONFIGURE_DEPENDS makes
+# CMake re-scan the tests/ folder automatically on the next build, so
+# adding a new test_*.cpp file later needs no edits here.
+file(GLOB TEST_SOURCES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/tests/test_*.cpp)
+
+foreach(test_src ${TEST_SOURCES})
+    get_filename_component(test_name ${test_src} NAME_WE)
+    add_executable(${test_name} ${test_src})
+    target_link_libraries(${test_name} PRIVATE tensor GTest::gtest_main)
+    gtest_discover_tests(${test_name})
+endforeach()
 
 add_custom_target(package_all
     DEPENDS tensor

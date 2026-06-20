@@ -74,7 +74,7 @@ float& Tensor::operator()(const std::vector<size_t> &indices) {
     }
     size_t offset = 0;
     for (size_t i = 0; i< indices.size(); i++){
-        if (indices[i] > shape_[i]) {
+        if (indices[i] >= shape_[i]) {
             throw std::out_of_range("Tensor index out of range");
         }
         offset += indices[i] * strides_[i];
